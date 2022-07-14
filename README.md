@@ -4,14 +4,11 @@
 
 1. python 3.8
 2. pytorch 1.7.0
-3. cuda 10.2
-4. cudnn 7.6.5
-5. numpy 1.18.5
 6. cvxopt 1.2.0
 
 ## Running Experiments
 
-Cd to ```Codes/```  and run the following command lines to start a training on Dir setting with different client selection strategies. If you want to train with 2SPC or 1SPC setting, you can replace the option ```--alpha=0.2``` with ```--shards_per_client=2``` or ```--shards_per_client=1``` respectively.
+Cd to the root directory of the repository and run the following command lines to start a training on Dir setting with different client selection strategies. If you want to train with 2SPC or 1SPC setting, you can replace the option ```--alpha=0.2``` with ```--shards_per_client=2``` or ```--shards_per_client=1``` respectively.
 
 For more details about each option, see ```/src/options.py```.
 

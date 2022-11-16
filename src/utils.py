@@ -36,7 +36,7 @@ def get_dataset(args,seed=None):
     rs = RandomState(seed)
     if args.dataset == 'cifar':
         args.num_classes = 10
-        data_dir = '/home/eva_share/datasets/cifar10'
+        data_dir = './data/cifar10'
         apply_transform = transforms.Compose(
             [transforms.ToTensor(),
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -67,10 +67,8 @@ def get_dataset(args,seed=None):
 
     elif args.dataset == 'mnist' or args.dataset == 'fmnist':
         args.num_classes = 10
-        # if args.dataset == 'mnist':
-        data_dir = '/home/eva_share/datasets/'
-        # else:
-        # data_dir = './data/'
+
+        data_dir = './data'
 
         apply_transform = transforms.Compose([
             transforms.ToTensor(),

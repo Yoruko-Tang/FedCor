@@ -45,7 +45,7 @@ def args_parser():
                         help = 'perform FedGP client selection, must be used with --gpr')
     parser.add_argument('--warmup',type = int, default=25,
                         help = 'length of warm up phase for GP')
-    parser.add_argument('--gpr_begin',type = int,default=10,
+    parser.add_argument('--gpr_begin',type = int,default=0,
                         help='the round begin to sample and train GP')
     parser.add_argument('--group_size',type = int, default = 11, 
                         help = 'length of history round to sample for GP, equal to M Delta t + 1 in paper')

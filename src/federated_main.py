@@ -40,7 +40,6 @@ if __name__ == '__main__':
     start_time = time.time()
     # define paths
     path_project = os.path.abspath('..')
-    # logger = SummaryWriter('./logs')
 
     args = args_parser()
     gargs = copy.deepcopy(args)
@@ -148,7 +147,6 @@ if __name__ == '__main__':
         max_accuracy=0.0
 
         local_losses = []# test losses evaluated on local models(before averaging)
-        # global_losses = []# test losses evaluated on global models(after averaging)
         chosen_clients = []# chosen clients on each epoch
         gt_global_losses = []# test losses on global models(after averaging) over all clients
         gpr_data = []# GPR Training data
@@ -164,7 +162,6 @@ if __name__ == '__main__':
 
         predict_losses = []
         offpolicy_losses = []
-        # mu = []
         sigma = []
         sigma_gt=[]
 
@@ -173,14 +170,6 @@ if __name__ == '__main__':
         list_acc, list_loss = federated_test_idx(args,global_model,
                                                 list(range(args.num_users)),
                                                 train_dataset,user_groups)
-        # global_model.eval()
-        # local_model = copy.deepcopy(global_model).to(device)
-        # for idx in range(args.num_users):
-        #     local_update = LocalUpdate(args=args, dataset=train_dataset,
-        #                                 idxs=user_groups[idx])
-        #     acc, loss = local_update.inference(model=local_model)
-        #     list_acc.append(acc)
-        #     list_loss.append(loss)
         gt_global_losses.append(list_loss)
         train_accuracy.append(sum(list_acc)/len(list_acc))
         
@@ -273,7 +262,6 @@ if __name__ == '__main__':
 
             if args.afl:
                 AFL_Valuation[idxs_users] = np.array(epoch_global_losses)*np.sqrt(weights[idxs_users]*len(train_dataset))
-            # global_losses.append(epoch_global_losses)
             local_losses.append(epoch_local_losses)
 
             # dynamic mu for FedProx
@@ -290,14 +278,6 @@ if __name__ == '__main__':
             list_acc, list_loss = federated_test_idx(args,global_model,
                                                     list(range(args.num_users)),
                                                     train_dataset,user_groups)
-            # global_model.eval()
-            # local_model = copy.deepcopy(global_model).to(device)
-            # for idx in range(args.num_users):
-            #     local_update = LocalUpdate(args=args, dataset=train_dataset,
-            #                             idxs=user_groups[idx])
-            #     acc, loss = local_update.inference(model=local_model)
-            #     list_acc.append(acc)
-            #     list_loss.append(loss)
             gt_global_losses.append(list_loss)
             train_accuracy.append(sum(list_acc)/len(list_acc))
 
@@ -318,8 +298,6 @@ if __name__ == '__main__':
                 predict_loss,mu_p,sigma_p = gpr.Predict_Loss(test_data,test_idx,pred_idx)
                 print("GPR Predict relative Loss:{:.4f}".format(predict_loss))
                 predict_losses.append(predict_loss)
-                # mu.append(mu_p.detach().numpy())
-                # sigma.append(sigma_p.detach().numpy())
                 
 
             
@@ -388,13 +366,11 @@ if __name__ == '__main__':
             if (epoch+1) % print_every == 0:
                 print(' \nAvg Training Stats after {} global rounds:'.format(epoch+1))
                 print('Training Loss : {}'.format(np.sum(np.array(list_loss)*weights)))
-                # print('Train Accuracy: {:.2f}%'.format(100*train_accuracy[-1]))
                 print("Test Accuracy: {:.2f}%\n".format(100*test_acc))
         
         
         print(' \n Results after {} global rounds of training:'.format(epoch+1))
         print("|---- Final Test Accuracy: {:.2f}%".format(100*test_accuracy[-1]))
-        # print("|---- Max Train Accuracy: {:.2f}%".format(100*max(train_accuracy)))
         print("|---- Max Test Accuracy: {:.2f}%".format(100*max(test_accuracy)))
 
         print('\n Total Run Time: {0:0.4f}'.format(time.time()-start_time))

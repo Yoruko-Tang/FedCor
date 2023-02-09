@@ -41,6 +41,8 @@ def args_parser():
     # GPR arguments
     parser.add_argument('--gpr',action = 'store_true',
                         help = 'activate GP, using without --gpr_selection will construct an off-policy experiment')
+    parser.add_argument('--gpr_gpu', default=None, 
+                        help="To use cuda, set to a specific GPU ID. Default set to use CPU.")
     parser.add_argument('--gpr_selection',action = 'store_true',
                         help = 'perform FedGP client selection, must be used with --gpr')
     parser.add_argument('--warmup',type = int, default=25,

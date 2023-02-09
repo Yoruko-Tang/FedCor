@@ -72,7 +72,7 @@ if __name__ == '__main__':
     
 
     device = 'cuda:'+args.gpu if args.gpu else 'cpu'
-    gpr_device = 'cpu'
+    gpr_device = 'cuda:'+args.gpr_gpu if args.gpr_gpu else 'cpu'
     if args.gpu:
         torch.cuda.set_device(device)
     if gargs.seed is None or gargs.iid:

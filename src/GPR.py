@@ -25,7 +25,7 @@ class GPR(torch.nn.Module):
         mu: Mean Priori, which is fixed while training. We set it as the postieriori of the 
             last round.
     """
-    def __init__(self,num_users,loss_type = 'LOO',init_noise = 1.0):
+    def __init__(self,num_users,loss_type = 'LOO',init_noise = 1.0,device = torch.device('cpu')):
         """
         Arguments:
             num_users: Number of users in a Federated Learning setting
@@ -36,9 +36,9 @@ class GPR(torch.nn.Module):
         self.loss_type = loss_type
         # sigma_n
         self.noise = Parameter(torch.tensor(init_noise))
-        self.mu = torch.zeros(num_users).detach()
-        self.loss_stat = torch.ones(num_users).detach()
-        self.discount = torch.ones(num_users).detach()
+        self.mu = torch.zeros(num_users).to(device).detach()
+        self.loss_stat = torch.ones(num_users).to(device).detach()
+        self.discount = torch.ones(num_users).to(device).detach()
 
     def Covariance(self,ids = None):
         raise NotImplementedError("A GPR class must have a function to calculate covariance matrix")
@@ -159,7 +159,7 @@ class GPR(torch.nn.Module):
             if weights is None:
                 total_loss_decrease = torch.sum(Sigma_valid,dim=0)*Diag_valid
             else:
-                total_loss_decrease = torch.sum(torch.tensor(weights).reshape([self.num_users,1])*Sigma_valid,dim=0)*Diag_valid
+                total_loss_decrease = torch.sum(torch.tensor(weights).to(self.noise).reshape([self.num_users,1])*Sigma_valid,dim=0)*Diag_valid
             # total_loss_decrease = torch.sum(loss_decrease,dim = 0)# Add across row
             mld,idx = torch.min(total_loss_decrease,0)
             idx = idx.item()
@@ -382,7 +382,7 @@ class Kernel_GPR(GPR):
     """
 
     
-    def __init__(self, num_users,init_noise = 1.0,dimension = 10,kernel = SE_Kernel,loss_type = 'LOO',**Kernel_Arg):
+    def __init__(self, num_users,init_noise = 1.0,device = torch.device('cpu'),dimension = 10,kernel = SE_Kernel,loss_type = 'LOO',**Kernel_Arg):
         class Index_Projection(torch.nn.Module):
             """
             Module that project an index(an int between 0 and num_users-1) to a dimension-D space
@@ -397,7 +397,7 @@ class Kernel_GPR(GPR):
                 Return a column vector as the location in the dimension-D space
                 """
                 return self.PMatrix[:,i]
-        super(Kernel_GPR, self).__init__(num_users,loss_type,init_noise)
+        super(Kernel_GPR, self).__init__(num_users,loss_type,init_noise,device)
         self.Projection = Index_Projection(num_users,dimension)
         self.Kernel = kernel(**Kernel_Arg)
 
@@ -445,8 +445,8 @@ class Matrix_GPR(GPR):
         The Covariance Matrix Priori is computed as LL'.
         The total number of parameters is (num_users*num_users+num_users)//2+1
     """
-    def __init__(self, num_users,loss_type = 'LOO'):
-        super(Matrix_GPR, self).__init__(num_users,loss_type)
+    def __init__(self, num_users,loss_type = 'LOO',device = torch.device('cpu')):
+        super(Matrix_GPR, self).__init__(num_users,loss_type,device=device)
         # Lower Triangular Matrix L Elements without diagonal elements
         self.Lower = Parameter(torch.zeros((num_users*num_users-num_users)//2))
         self.index = torch.zeros((num_users*num_users-num_users)//2,dtype = torch.long)

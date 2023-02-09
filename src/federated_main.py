@@ -72,6 +72,7 @@ if __name__ == '__main__':
     
 
     device = 'cuda:'+args.gpu if args.gpu else 'cpu'
+    gpr_device = 'cpu'
     if args.gpu:
         torch.cuda.set_device(device)
     if gargs.seed is None or gargs.iid:
@@ -121,12 +122,12 @@ if __name__ == '__main__':
         if args.gpr:
             if args.kernel=='Poly':
                 gpr = Kernel_GPR(args.num_users,dimension = args.dimension,init_noise=0.01,
-                                    order = 1,Normalize = args.poly_norm,kernel=GPR.Poly_Kernel,loss_type= args.train_method)
+                                    order = 1,Normalize = args.poly_norm,kernel=GPR.Poly_Kernel,loss_type= args.train_method,device=gpr_device)
             elif args.kernel=='SE':
-                gpr = Kernel_GPR(args.num_users,dimension = args.dimension,init_noise=0.01,kernel=GPR.SE_Kernel,loss_type= args.train_method)
+                gpr = Kernel_GPR(args.num_users,dimension = args.dimension,init_noise=0.01,kernel=GPR.SE_Kernel,loss_type= args.train_method,device=gpr_device)
             else:
-                gpr = GPR.Matrix_GPR(args.num_users,loss_type=args.train_method)
-            # gpr.to(device)
+                gpr = GPR.Matrix_GPR(args.num_users,loss_type=args.train_method,device=gpr_device)
+            gpr.to(gpr_device)
 
         # copy weights
         global_weights = global_model.state_dict()

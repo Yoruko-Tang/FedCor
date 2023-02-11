@@ -40,23 +40,22 @@ def args_parser():
 
     # GPR arguments
     parser.add_argument('--gpr',action = 'store_true',
-                        help = 'activate GP, using without --gpr_selection will construct an off-policy experiment')
+                        help = 'Use FedCor')
     parser.add_argument('--gpr_gpu', default=None, 
                         help="To use cuda, set to a specific GPU ID. Default set to use CPU.")
-    parser.add_argument('--gpr_selection',action = 'store_true',
-                        help = 'perform FedGP client selection, must be used with --gpr')
     parser.add_argument('--warmup',type = int, default=25,
                         help = 'length of warm up phase for GP')
     parser.add_argument('--gpr_begin',type = int,default=0,
                         help='the round begin to sample and train GP')
-    parser.add_argument('--group_size',type = int, default = 11, 
-                        help = 'length of history round to sample for GP, equal to M Delta t + 1 in paper')
+    parser.add_argument('--group_size',type = int, default = 10, 
+                        help = 'length of history round to sample for GP, equal to M in paper')
     parser.add_argument('--GPR_interval',type = int, default= 5, 
                         help = 'interval of sampling and training of GP, namely, Delta t')
     parser.add_argument('--GPR_gamma',type = float,default = 0.8,
                         help = 'gamma for training GP')
     parser.add_argument('--GPR_Epoch',type=int,default=100,
                         help = 'number of optimization iterations of GP')
+    parser.add_argument('--update_mean', action='store_true',help="Whether to update the mean of the GPR")
     parser.add_argument('--kernel',type = str,default = 'Poly',
                         help = 'kind of kernel used in GP (Poly,SE)')
     parser.add_argument('--poly_norm',type=int,default=0,
@@ -65,10 +64,6 @@ def args_parser():
                         help = 'dimension of embedding in GP')
     parser.add_argument('--train_method',type = str,default='MML',
                         help = 'method of training GP (MML,LOO)')
-    parser.add_argument('--discount_method',type = str,default='time',
-                        help='use [loss,time] to discount the selection policy')
-    parser.add_argument('--loss_power',type = float, default=0.3,
-                        help = 'index of loss discount in selection')
     parser.add_argument('--discount',type = float, default=0.9, 
                         help = 'annealing coefficient, i.e., beta in paper')
     parser.add_argument('--epsilon_greedy',type = float,default=0.0,

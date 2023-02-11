@@ -3,17 +3,16 @@
 # Python version: 3.6
 
 import torch
-from torch import nn
 from torch.utils.data import DataLoader, Dataset
 import torch.nn.functional as F
 import copy
-import time
+
 from utils import average_weights
-from collections import Counter
+
 import numpy as np
 from tqdm import tqdm
 
-# import matplotlib.pyplot as plt
+
 
 
 def ce_criterion(pred, target, *args):

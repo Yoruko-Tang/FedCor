@@ -280,15 +280,13 @@ if __name__ == '__main__':
             if args.gpr:
                 if epoch>=args.gpr_begin:
                     if epoch<=args.warmup:# warm-up
-                        epoch_gpr_data = [np.concatenate([np.expand_dims(list(range(args.num_users)),1),
-                                                        np.expand_dims(np.array(gt_global_losses[-1])-np.array(gt_global_losses[-2]),1)],1),]
-                        gpr.Update_Training_Data(epoch_gpr_data,epoch=epoch)
+                        gpr.Update_Training_Data([np.arange(args.num_users),],[np.array(gt_global_losses[-1])-np.array(gt_global_losses[-2]),],epoch=epoch)
                         if not args.update_mean:
                             print("Training GPR")
-                            gpr.Train(lr = 1e-2,llr = 1e-2,max_epoches=150,schedule_lr=False,update_mean=args.update_mean,verbose=args.verbose)
+                            gpr.Train(lr = 1e-2,llr = 0.01,max_epoches=150,schedule_lr=False,update_mean=args.update_mean,verbose=args.verbose)
                         elif epoch == args.warmup:
                             print("Training GPR")
-                            gpr.Train(lr = 1e-2,llr = 1e-2,max_epoches=1000,schedule_lr=False,update_mean=args.update_mean,verbose=args.verbose)
+                            gpr.Train(lr = 1e-2,llr = 0.01,max_epoches=1000,schedule_lr=False,update_mean=args.update_mean,verbose=args.verbose)
 
                     elif epoch>args.warmup and epoch%args.GPR_interval==0:# normal and optimization round
                         gpr.Reset_Discount()
@@ -296,11 +294,9 @@ if __name__ == '__main__':
                         random_idxs_users = np.random.choice(range(args.num_users), m, replace=False)
                         gpr_acc,gpr_loss = train_federated_learning(args,epoch,
                                             copy.deepcopy(global_model),random_idxs_users,train_dataset,user_groups)
-                        epoch_gpr_data = [np.concatenate([np.expand_dims(list(range(args.num_users)),1),
-                                                        np.expand_dims(np.array(gpr_loss)-np.array(gt_global_losses[-1]),1)],1),]
-                        gpr.Update_Training_Data(epoch_gpr_data,epoch=epoch)
+                        gpr.Update_Training_Data([np.arange(args.num_users),],[np.array(gpr_loss)-np.array(gt_global_losses[-1]),],epoch=epoch)
                         print("Training GPR")
-                        gpr.Train(lr = 1e-2,llr = 1e-2,max_epoches=args.GPR_Epoch,schedule_lr=False,update_mean=args.update_mean,verbose=args.verbose)
+                        gpr.Train(lr = 1e-2,llr = 0.01,max_epoches=args.GPR_Epoch,schedule_lr=False,update_mean=args.update_mean,verbose=args.verbose)
 
                     else:# normal and not optimization round
                         gpr.Update_Discount(idxs_users,args.discount)

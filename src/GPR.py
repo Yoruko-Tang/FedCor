@@ -40,11 +40,12 @@ class GPR(torch.nn.Module):
     def Covariance(self,ids = None):
         raise NotImplementedError("A GPR class must have a function to calculate covariance matrix")
 
-    def Update_Training_Data(self,data,epoch):
+    def Update_Training_Data(self,client_idxs,loss_changes,epoch):
         """
         The training data should be in the form of : data[epoch] = sample_num x [user_indices, loss_change] (N x 2)
         Thus the data[epoch] is in shape S x N x 2
         """
+        data = np.concatenate([np.expand_dims(np.array(client_idxs),2),np.expand_dims(np.array(loss_changes),2)],2)
         self.data[epoch] = torch.tensor(data,device=self.device,dtype=torch.float)
         for e in list(self.data.keys()):
             if e+self.reusable_history_length<epoch:
